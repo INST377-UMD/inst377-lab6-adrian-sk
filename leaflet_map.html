@@ -1,0 +1,69 @@
+<!-- Adrian Strasser-King 
+INST377 Dash
+October 27, 2024
+
+HTML file for Lab 6 Assignment -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Map of US</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+            crossorigin=""/>
+        <link rel="stylesheet" href="map_style.css"> 
+    </head>
+
+    <body>
+        <h1>Map of US</h1>
+        <div id="map"></div>
+        <div class="marker-info"></div>
+
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+                crossorigin="">
+        </script>
+        
+        <script>
+            function getRandomInRange(from, to, fixed) { 
+                return (Math.random() * (to - from) + from).toFixed(fixed) * 1;
+            }
+
+            const map = L.map('map').setView([37.1, -95.7], 4);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            
+            const numOfMarkers = 3;
+            const markerInfo = []; 
+
+            for (let i = 0; i < numOfMarkers; i++) {
+                const lat = getRandomInRange(30, 35, 3);
+                const long = getRandomInRange(-100, -90, 3);
+
+                const marker = L.marker([lat, long]).addTo(map);
+                
+                const apiFetch = fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${long}&localityLanguage=en`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const localityInfo = data.locality || "Locality not found";
+                        marker.bindPopup(localityInfo).openPopup();
+
+                        return `<h2>Marker ${i + 1}: Latitude: ${lat.toFixed(3)}, Longitude: ${long.toFixed(3)}</h2>
+                        <p>Locality: ${localityInfo}</p>`;});
+
+                markerInfo.push(apiFetch);}
+
+            /*Since fetch is asynchronous, it would naturally provide the information for the most  
+            readily attainable location, which may not always be the first location initiated. 
+            Promise used to make sure information is printed in the order of initiation.*/
+
+            Promise.all(markerInfo).then(markerInfoFormat => {
+                const markerInfoDiv = document.querySelector('.marker-info');
+                markerInfoDiv.innerHTML = markerInfoFormat.join(''); 
+            });
+        </script>
+    </body>
+</html>

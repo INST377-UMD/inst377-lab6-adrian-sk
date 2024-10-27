@@ -1,0 +1,33 @@
+/* Adrian Strasser-King 
+INST377 Dash
+October 27, 2024*/
+
+/* CSS File for Lab 6*/
+body {
+    font-family: 'Times New Roman', Times, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: black;
+    font-size: 15pt;
+    text-align: left;
+}
+
+h2 {
+    font-size: 15pt; 
+}
+
+#map {
+    height: 500px;
+    width: 100%;
+}
+
+.marker-info {
+    text-align: left;
+}
+
+.marker-info p {
+    font-weight: bold;
+}
